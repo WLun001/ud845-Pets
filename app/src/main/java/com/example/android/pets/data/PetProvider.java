@@ -72,7 +72,7 @@ public class PetProvider extends ContentProvider {
     @Override
     public String getType(@NonNull Uri uri) {
         int match = matcher.match(uri);
-        switch (match){
+        switch (match) {
             case PETS:
                 return PetEntry.CONTENT_LIST_TYPE;
             case PET_ID:
@@ -94,15 +94,15 @@ public class PetProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int rowDeleted = 0;
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            int match = matcher.match(uri);
-            if (match == PETS) rowDeleted = db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
-            else if (match == PET_ID) {
-                selection = PetEntry._ID + "=?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                rowDeleted =  db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
-            } else throw new IllegalArgumentException("deletion not supported" + uri);
-        if(rowDeleted != 0) getContext().getContentResolver().notifyChange(uri, null);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int match = matcher.match(uri);
+        if (match == PETS) rowDeleted = db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
+        else if (match == PET_ID) {
+            selection = PetEntry._ID + "=?";
+            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+            rowDeleted = db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
+        } else throw new IllegalArgumentException("deletion not supported" + uri);
+        if (rowDeleted != 0) getContext().getContentResolver().notifyChange(uri, null);
         return rowDeleted;
 
     }
@@ -152,41 +152,41 @@ public class PetProvider extends ContentProvider {
     }
 
     private int updatePet(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-            // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-            // check that the name value is not null.
-            if (values.containsKey(PetEntry.COLUMN_PET_NAME)) {
-                String name = values.getAsString(PetEntry.COLUMN_PET_NAME);
-                if (name == null) {
-                    throw new IllegalArgumentException("Pet requires a name");
-                }
+        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
+        // check that the name value is not null.
+        if (values.containsKey(PetEntry.COLUMN_PET_NAME)) {
+            String name = values.getAsString(PetEntry.COLUMN_PET_NAME);
+            if (name == null) {
+                throw new IllegalArgumentException("Pet requires a name");
             }
+        }
 
-            // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
-            // check that the gender value is valid.
-            if (values.containsKey(PetEntry.COLUMN_PET_GENDER)) {
-                Integer gender = values.getAsInteger(PetEntry.COLUMN_PET_GENDER);
-                if (gender == null || !PetEntry.isValidGender(gender)) {
-                    throw new IllegalArgumentException("Pet requires valid gender");
-                }
+        // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
+        // check that the gender value is valid.
+        if (values.containsKey(PetEntry.COLUMN_PET_GENDER)) {
+            Integer gender = values.getAsInteger(PetEntry.COLUMN_PET_GENDER);
+            if (gender == null || !PetEntry.isValidGender(gender)) {
+                throw new IllegalArgumentException("Pet requires valid gender");
             }
+        }
 
-            // If the {@link PetEntry#COLUMN_PET_WEIGHT} key is present,
-            // check that the weight value is valid.
-            if (values.containsKey(PetEntry.COLUMN_PET_WEIGHT)) {
-                // Check that the weight is greater than or equal to 0 kg
-                Integer weight = values.getAsInteger(PetEntry.COLUMN_PET_WEIGHT);
-                if (weight != null && weight < 0) {
-                    throw new IllegalArgumentException("Pet requires valid weight");
-                }
+        // If the {@link PetEntry#COLUMN_PET_WEIGHT} key is present,
+        // check that the weight value is valid.
+        if (values.containsKey(PetEntry.COLUMN_PET_WEIGHT)) {
+            // Check that the weight is greater than or equal to 0 kg
+            Integer weight = values.getAsInteger(PetEntry.COLUMN_PET_WEIGHT);
+            if (weight != null && weight < 0) {
+                throw new IllegalArgumentException("Pet requires valid weight");
             }
+        }
 
-            // If there are no values to update, then don't try to update the database
-            if (values.size() == 0) {
-                return 0;
-            }
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            int rowUpdated =  db.update(PetEntry.TABLE_NAME, values, selection, selectionArgs);
-            if(rowUpdated != 0) getContext().getContentResolver().notifyChange(uri, null);
+        // If there are no values to update, then don't try to update the database
+        if (values.size() == 0) {
+            return 0;
+        }
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int rowUpdated = db.update(PetEntry.TABLE_NAME, values, selection, selectionArgs);
+        if (rowUpdated != 0) getContext().getContentResolver().notifyChange(uri, null);
         return rowUpdated;
     }
 }
