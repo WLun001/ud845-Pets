@@ -93,18 +93,17 @@ public class PetProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        try {
+        int rowDeleted = 0;
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             int match = matcher.match(uri);
-            if (match == PETS) return db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
+            if (match == PETS) rowDeleted = db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
             else if (match == PET_ID) {
                 selection = PetEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
+                rowDeleted =  db.delete(PetEntry.TABLE_NAME, selection, selectionArgs);
             } else throw new IllegalArgumentException("deletion not supported" + uri);
-        }finally{
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
+        if(rowDeleted != 0) getContext().getContentResolver().notifyChange(uri, null);
+        return rowDeleted;
 
     }
 
@@ -153,8 +152,6 @@ public class PetProvider extends ContentProvider {
     }
 
     private int updatePet(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        try {
-
             // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
             // check that the name value is not null.
             if (values.containsKey(PetEntry.COLUMN_PET_NAME)) {
@@ -188,9 +185,8 @@ public class PetProvider extends ContentProvider {
                 return 0;
             }
             SQLiteDatabase db = dbHelper.getWritableDatabase();
-            return db.update(PetEntry.TABLE_NAME, values, selection, selectionArgs);
-        }finally{
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
+            int rowUpdated =  db.update(PetEntry.TABLE_NAME, values, selection, selectionArgs);
+            if(rowUpdated != 0) getContext().getContentResolver().notifyChange(uri, null);
+        return rowUpdated;
     }
 }
