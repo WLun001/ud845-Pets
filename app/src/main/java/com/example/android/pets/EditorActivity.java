@@ -47,8 +47,8 @@ import com.example.android.pets.data.PetContract.PetEntry;
  */
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final int LOADER_ID = 1;
     private boolean mPetHasChanged = false;
-
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -56,19 +56,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             return false;
         }
     };
-
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mNameEditText;
-
-    /** EditText field to enter the pet's breed */
+    /**
+     * EditText field to enter the pet's breed
+     */
     private EditText mBreedEditText;
-
-    /** EditText field to enter the pet's weight */
+    /**
+     * EditText field to enter the pet's weight
+     */
     private EditText mWeightEditText;
-
-    /** EditText field to enter the pet's gender */
+    /**
+     * EditText field to enter the pet's gender
+     */
     private Spinner mGenderSpinner;
-
     /**
      * Gender of the pet. The possible valid values are in the PetContract.java file:
      * {@link PetEntry#GENDER_UNKNOWN}, {@link PetEntry#GENDER_MALE}, or
@@ -76,8 +79,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
      */
     private int mGender = PetEntry.GENDER_UNKNOWN;
     private Uri uri;
-
-    public static final int LOADER_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,12 +100,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         Intent intent = getIntent();
         uri = intent.getData();
-        if(uri != null) {
+        if (uri != null) {
             setTitle("Edit a pet");
             Log.d("uri", uri.toString());
             getLoaderManager().initLoader(LOADER_ID, null, this);
-        }
-        else setTitle("Add a pet");
+        } else setTitle("Add a pet");
 
 
     }
@@ -168,11 +168,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
-        if(uri != null){
+        if (uri != null) {
             getContentResolver().update(uri, values, null, null);
             Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             Uri result = getContentResolver().insert(PetEntry.CONTENT_URI, values);
             Toast.makeText(this, "inserted id : " + Long.toString(ContentUris.parseId(result)), Toast.LENGTH_SHORT).show();
         }
@@ -207,7 +206,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Inflate the menu options from the res/menu/menu_editor.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_editor, menu);
-        if(uri == null) menu.removeItem(R.id.action_delete);
+        if (uri == null) menu.removeItem(R.id.action_delete);
         return true;
     }
 
@@ -223,11 +222,19 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option
-            case R.id.action_delete:
-                getContentResolver().delete(uri, null, null);
-                Toast.makeText(this, "deleted", Toast.LENGTH_SHORT).show();
-                finish();
+            case R.id.action_delete: {
+                DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                getContentResolver().delete(uri, null, null);
+                                Toast.makeText(EditorActivity.this, "deleted", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        };
+                showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
+            }
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // Navigate back to parent activity (CatalogActivity)
@@ -280,7 +287,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 
-         String[] projection = {
+        String[] projection = {
                 PetEntry._ID,
                 PetEntry.COLUMN_PET_NAME,
                 PetEntry.COLUMN_PET_BREED,
