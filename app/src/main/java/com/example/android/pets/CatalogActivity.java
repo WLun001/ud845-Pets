@@ -16,19 +16,25 @@
 package com.example.android.pets;
 
 import android.app.LoaderManager;
+import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -51,6 +57,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private PetCursorAdapter adapter;
 
     public static final int LOADER_ID = 1;
+    public static final int PREF_MODE = 1;
 
 
     @Override
@@ -65,6 +72,16 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         adapter = new PetCursorAdapter(this, null);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+                intent.setData(ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
+                Log.d(CatalogActivity.class.getSimpleName(), ""+ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
+                if(intent.resolveActivity(getPackageManager()) != null) startActivity(intent);
+            }
+        });
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
 
