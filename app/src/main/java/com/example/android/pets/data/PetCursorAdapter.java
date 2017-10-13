@@ -18,10 +18,11 @@ import com.example.android.pets.R;
 public class PetCursorAdapter extends CursorAdapter {
     private LayoutInflater inflater;
 
-    public PetCursorAdapter(Context context, Cursor c){
+    public PetCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
         return inflater.inflate(R.layout.list_item, viewGroup, false);
@@ -35,7 +36,7 @@ public class PetCursorAdapter extends CursorAdapter {
         tvName.setText(cursor.getString(cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_NAME)));
 
         String breed = cursor.getString(cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_BREED));
-        if(TextUtils.isEmpty(breed)) tvBreed.setText("Unknown breed");
+        if (TextUtils.isEmpty(breed)) tvBreed.setText("Unknown breed");
         else tvBreed.setText(breed);
     }
 }

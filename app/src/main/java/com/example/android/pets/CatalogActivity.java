@@ -16,18 +16,14 @@
 package com.example.android.pets;
 
 import android.app.LoaderManager;
-import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -46,19 +42,16 @@ import com.example.android.pets.data.PetCursorAdapter;
  */
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final int LOADER_ID = 1;
+    public static final int PREF_MODE = 1;
     private String[] projection = {
             PetEntry._ID,
             PetEntry.COLUMN_PET_NAME,
             PetEntry.COLUMN_PET_BREED,
             PetEntry.COLUMN_PET_GENDER,
             PetEntry.COLUMN_PET_WEIGHT};
-
     private ListView listView;
     private PetCursorAdapter adapter;
-
-    public static final int LOADER_ID = 1;
-    public static final int PREF_MODE = 1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +71,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
                 intent.setData(ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
-                Log.d(CatalogActivity.class.getSimpleName(), ""+ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
-                if(intent.resolveActivity(getPackageManager()) != null) startActivity(intent);
+                Log.d(CatalogActivity.class.getSimpleName(), "" + ContentUris.withAppendedId(PetEntry.CONTENT_URI, id));
+                if (intent.resolveActivity(getPackageManager()) != null) startActivity(intent);
             }
         });
 
